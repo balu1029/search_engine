@@ -1,4 +1,5 @@
 #search-form-div {
+    margin: 20%;
     margin: auto;
 }
 
@@ -7,5 +8,6 @@
 }
 
 #search-input {
-    border-color: none;
+    border: 3px;
+    border-bottom-color: rgb(12, 12, 12);
 }
