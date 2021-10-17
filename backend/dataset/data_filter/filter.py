@@ -1,7 +1,7 @@
 import os
 import csv
 
-sign = "�"
+signs = []
 count_bad = 0
 count_good = 0
 
