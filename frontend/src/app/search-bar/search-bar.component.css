@@ -1,14 +1,26 @@
-#search-form-div {
+#search-form {
     margin: 20%;
     padding: 20px;
-    margin: auto;
-    justify-content: center;
-    align-items: center;
+    margin: 3%;
     align-content: center;
-    text-align: center;
+    border:1px solid rgba(196, 132, 14, 0.363);
+    border-radius: 5px;
+    
 }
 
-.searchInput {
-    border: 3px;
-    border-bottom-color: rgb(12, 12, 12);
+label, input {
+    display: block;
+    font-size: x-large;
+}
+
+.input {
+    margin-bottom: 20px;
+    margin-top: 4px;
+    border: none;
+    border-bottom: 3px solid black;
+    border-radius: 4px;
+}
+.input:focus {
+    outline: none;
+    background-color: lightgray
 }
