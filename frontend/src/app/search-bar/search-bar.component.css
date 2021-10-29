@@ -1,13 +1,14 @@
 #search-form-div {
     margin: 20%;
+    padding: 20px;
     margin: auto;
-}
-
-#search-form {
+    justify-content: center;
+    align-items: center;
+    align-content: center;
     text-align: center;
 }
 
-#search-input {
+.searchInput {
     border: 3px;
     border-bottom-color: rgb(12, 12, 12);
 }

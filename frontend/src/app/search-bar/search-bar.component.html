@@ -1,6 +1,29 @@
 <div id="search-form-div">
-    <form id="search-form">
-        <input type="text" placeholder="Search..." id="search-input">
-        <fa-icon [icon]="faSearch"></fa-icon>
+    <form [formGroup]="beerForm" (ngSubmit)="onSubmit()">
+        Value: {{ beerForm }} <br>
+
+        <label>
+            Suche
+            <input type="text" formControlName="query" placeholder="Find your beer!">
+        </label>
+
+        <label>
+            Minimaler Alkoholgehalt
+            <input type="text" formControlName="minABV" placeholder="">
+        </label>
+
+        <label>
+            Maximaler Alkoholgehalt
+            <input type="text" formControlName="maxABV" placeholder="">
+        </label>
+
+        <label>
+            Braumethode
+            <input type="text" formControlName="brewMethod" placeholder="IPA, Cold Brew, etc...">
+        </label>
+
+        <button type="submit">
+            Search <fa-icon [icon]="faSearch"></fa-icon>
+        </button>
     </form>
 </div>
