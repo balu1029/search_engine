@@ -2,7 +2,18 @@ POST http://34.198.77.180:5000/search HTTP/1.0
 
 {
     "query" : "Vanilla Coffee Porter",
-    "maxABV": 7,
-    "minABV": 6,
-    "brewMethod" : "BIAB"
+    "extraOptions":
+    {
+        "maxABV": 7,
+        "minABV": 6,
+        "brewMethod" : "BIAB"
+    }
 }
+
+###
+
+GET http://34.198.77.180:5000/brew HTTP/1.0
+
+###
+
+GET http://34.198.77.180:5000/autocomplete?query=Indian HTTP/1.0
