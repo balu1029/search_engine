@@ -1,28 +1,68 @@
-<div >
-    <form [formGroup]="beerForm" (ngSubmit)="onSubmit()" id="search-form">
-        <label>
-            Suche
-            <input type="text" formControlName="query" placeholder="Find your beer!" class="input"> 
-        </label>
+<div id="outerDiv">
+    <div id="formDiv">
+        <form [formGroup]="beerForm" (ngSubmit)="onSubmit()" id="search-form">
+            <label id=searchInputLabel>
+                Suche
+                <input type="text" formControlName="query" placeholder="Finde dein Bier!" id="searchInput" autocomplete="off" list="searchSuggestions">
+                    <datalist id="searchSuggestions">
+                        <option *ngFor="let sugg of autoCompleteSugg" [ngValue]="sugg" >
+                            {{ sugg }}
+                        </option>
+                    </datalist>
+            </label>
+            <h3>Mehr Optionen
+                <span>
+                    <button (click)="openExtraOptions()" type="button">
+                        <fa-icon [icon]="faCaretRight" id="faCaretRight"></fa-icon>
+                    </button>
+                </span>
+            </h3>
 
-        <label>
-            Minimaler Alkoholgehalt
-            <input type="text" formControlName="minABV"  class="input">
-        </label>
+            <div formGroupName="extraOptions" *ngIf="extraOptionsToggle">
+                <label>
+                    Minimaler Alkoholgehalt
+                    <input type="number" formControlName="minABV" class="input" step="0.1">
+                </label>
 
-        <label>
-            Maximaler Alkoholgehalt
-            <input type="text" formControlName="maxABV"  class="input">
-        </label>
+                <label>
+                    Maximaler Alkoholgehalt
+                    <input type="number" formControlName="maxABV" class="input" step="0.1">
+                </label>
 
-        <label>
-            Braumethode
-            <input type="text" formControlName="brewMethod" placeholder="IPA, Cold Brew, etc..." class="input">
-        </label>
+                <label>
+                    Braumethode
+                    <select formControlName="brewMethod" placeholder="IPA, Cold Brew, etc..." class="selectBrewMethod">
+                        <option *ngFor="let method of brewMethods.results" [ngValue]="method" id="method">
+                            {{method}}
+                        </option>
+                    </select>
+                </label>
+            </div>
 
+            <button type="submit" id="submitButton">
+                Suche <fa-icon [icon]="faSearch"></fa-icon>
+            </button>
+        </form>
+    </div>
+    <div id="homer-div" *ngIf="!searchResults">
+        <img src="../../assets/sad-homer.png" alt="There's no beer to be seen"  id="homer">
+        Kein Bier auf Hawaii
+    </div>
 
-        <button type="submit">
-            Search <fa-icon [icon]="faSearch"></fa-icon>
-        </button>
-    </form>
+    <div *ngIf="searchResults" id="searchResults">
+        <div *ngFor="let searchRes of searchResults" class="searches">
+
+            <div id="resultName">{{ searchRes.name }}</div>
+
+            <div id="resultABV">{{ searchRes.abv }}‰ </div>
+
+            <div id="resultBrewMethod">Braumethode: {{ searchRes.brewMethod }}</div>
+
+            <div id="resultStyle">Sorte: {{ searchRes.style }}</div>
+
+            <div id="resultURL">
+                Zum Rezept: <a href="{{searchRes.url}}" target="_blank">{{ searchRes.url }}</a>
+            </div>
+        </div>
+    </div>
 </div>
