@@ -1,4 +1,4 @@
-POST http://34.198.77.180:5000/search HTTP/1.0
+POST http://34.198.77.180:5000/search HTTP/1.1
 
 {
     "query" : "Vanilla Coffee Porter",
@@ -12,8 +12,12 @@ POST http://34.198.77.180:5000/search HTTP/1.0
 
 ###
 
-GET http://34.198.77.180:5000/brew HTTP/1.0
+GET http://34.198.77.180:5000/brew HTTP/1.1
 
 ###
 
-GET http://34.198.77.180:5000/autocomplete?query=Indian HTTP/1.0
+GET http://34.198.77.180:5000/autocomplete?query=vanilla HTTP/1.1
+
+###
+
+GET http://34.198.77.180:5000/ HTTP/1.1

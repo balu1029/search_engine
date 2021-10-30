@@ -18,10 +18,10 @@ es = Elasticsearch(
 
 @app.route("/")
 def hello_world():
-    return "<p>Hello, World!</p>"
+    return "Supporting /search[POST], /autocomplete[GET], /brew[GET]"
 
 
-@app.route("/search",methods = ['POST', 'GET'])
+@app.route("/search",methods = ['POST'])
 @cross_origin()
 def search():
     '''
@@ -36,6 +36,11 @@ def search():
     s = Search(using = es, index = "beer_recipes")
     query = Q("match", Name = req["query"]) | Q("match", Style = req["query"])
     s = s.query(query)
+
+    if(s.count() > 20):
+        s = s[0:20]
+    else:
+        s = s[:]
 
     try:
         if req["extraOptions"]["minABV"] == "":
@@ -73,12 +78,7 @@ def search():
     return json.dumps(res)
 
 
-#path for autocompletion proposes
-@app.route("/auto",methods = ['GET'])
-@cross_origin()
-def auto():
 
-    return "done"
 
 
 @app.route("/brew",methods = ['GET'])
@@ -92,6 +92,7 @@ def brew():
     methods = []
     res = {}
 
+    methods.append("")
     for elem in es_res["aggregations"]["dist_brewmethods"]["buckets"]:
         methods.append(elem["key"])
     res["results"] = methods
@@ -104,17 +105,18 @@ def autocomplete():
     q = request.args.get("query")
     s = Search(using = es, index = "beer_recipes")
 
-    query = Q("match", Name = q)
-    s = s.query(query)
+    #query = Q(**{"fuzzy":{ "Name" : {"value": q, "fuzziness" : 2}}})
+
+    s = s.query(Match(Name={"query": q, "fuzziness":8}))
     es_res = s.execute()
 
     methods = []
     res = {}
     count = 0
     for hit in es_res:
-        if str(q) in str(hit["Name"]):
+        if str(q).lower() in str(hit["Name"]).lower():
             val = hit["Name"]
-        elif str(q) in str(hit["Style"]):
+        elif str(q).lower() in str(hit["Style"]).lower():
             val = hit["Style"]
         else:
             continue
@@ -133,5 +135,3 @@ def autocomplete():
     return json.dumps(res)
 
 app.run(host = "0.0.0.0")
-
-# wie viele verschiedenen brew methods
