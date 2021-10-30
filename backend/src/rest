@@ -1,1 +1,8 @@
-GET http://34.198.77.180:5000/search?query={%22match%22:{%22Name%22:%22Campfire Stout%22}} HTTP/1.0
+POST http://34.198.77.180:5000/search HTTP/1.0
+
+{
+    "query" : "Vanilla Coffee Porter",
+    "maxABV": 7,
+    "minABV": 6,
+    "brewMethod" : "BIAB"
+}
