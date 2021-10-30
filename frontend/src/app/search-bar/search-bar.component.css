@@ -102,12 +102,36 @@ label, input, select {
     font-weight: 500;
 }
  #resultABV {
-     margin-top: 0px;
-     margin-right: 0px;
+     float: right;
+    font-size: xx-large;
  }
 
  #resultURL{
      border-top: 1px solid black;
      padding: 10px;
      margin: 2%;
+ }
+
+ #noSearchResults {
+    text-align: center;
+    align-items: center;
+    margin: 2%;
+    border: 2px solid rgb(34, 34, 34);
+    border-radius: 15px;
+ }
+
+ #homer {
+    padding-top: 30px;
+    margin: auto;
+    width: 60%;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+ }
+
+ #homer-div {
+     margin: auto;
+     align-items: center;
+     align-content: center;
+     text-align: center;
  }
