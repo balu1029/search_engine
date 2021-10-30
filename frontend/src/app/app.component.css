@@ -4,5 +4,7 @@ h1 {
     border-bottom: 2px solid rgb(167, 126, 14) ;
     border-radius: 2px;
     margin-bottom: 5px;
+    margin-top: 5px;
     padding-left: 10px;
+    padding-bottom: 2px;
 }
