@@ -4,12 +4,16 @@ from elasticsearch import Elasticsearch
 import json
 from flask_cors import CORS, cross_origin
 from elasticsearch_dsl import Search, Q, A
-from elasticsearch_dsl.query import Match
+from elasticsearch_dsl.query import MultiMatch
+from difflib import SequenceMatcher
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+
 base_url = "https://www.brewersfriend.com"
+num_autocomplete = 7
+num_results = 20
 
 es = Elasticsearch(
     "http://node-2.hska.io:9200/"
@@ -17,6 +21,7 @@ es = Elasticsearch(
 
 
 @app.route("/")
+@cross_origin()
 def hello_world():
     return "Supporting /search[POST], /autocomplete[GET], /brew[GET]"
 
@@ -24,24 +29,16 @@ def hello_world():
 @app.route("/search",methods = ['POST'])
 @cross_origin()
 def search():
-    '''
-    q = request.args.get('query')
-    q = json.loads(q)
-    res = es.search(index="beer_recipes", query=q)
-    '''
-    print(request.data)
+    
     res = []
     req = json.loads(request.data)
 
     s = Search(using = es, index = "beer_recipes")
-    query = Q("match", Name = req["query"]) | Q("match", Style = req["query"])
+    query = MultiMatch(query = req["query"], fields = ["Name", "Style"], fuzziness = 1)#Q("match", Name = req["query"]) | Q("match", Style = req["query"])
     s = s.query(query)
 
-    if(s.count() > 20):
-        s = s[0:20]
-    else:
-        s = s[:]
 
+    # exception handling for empty requests and filtering 
     try:
         if req["extraOptions"]["minABV"] == "":
             req["extraOptions"]["minABV"] = 0
@@ -57,9 +54,19 @@ def search():
             s = s.filter("term", **{"BrewMethod" : req["extraOptions"]["brewMethod"]})
     except:
         req["extraOptions"]["brewMethod"] = ""
-
     s = s.filter("range", **{"ABV": {"from": req["extraOptions"]["minABV"], "to": req["extraOptions"]["maxABV"]}})
     
+    # implementation of the load more function
+    try:
+        start = int(request.args.get("offset"))
+    except:
+        start = 0
+    if(s.count() > start + num_results):
+        s = s[start:start+num_results]
+    else:
+        s = s[start:]
+
+
     es_res = s.execute()
 
     for hit in es_res:  
@@ -70,15 +77,13 @@ def search():
             response["abv"] = hit.ABV
             response["brewMethod"] = hit.BrewMethod
             response["style"] = hit.Style
+            response["num_hits"] = s.count()
 
             res.append(response)
         except:
             continue
         
     return json.dumps(res)
-
-
-
 
 
 @app.route("/brew",methods = ['GET'])
@@ -98,6 +103,7 @@ def brew():
     res["results"] = methods
     return json.dumps(res)
 
+
 @app.route("/autocomplete",methods = ['GET'])
 @cross_origin()
 def autocomplete():
@@ -105,26 +111,32 @@ def autocomplete():
     q = request.args.get("query")
     s = Search(using = es, index = "beer_recipes")
 
-    #query = Q(**{"fuzzy":{ "Name" : {"value": q, "fuzziness" : 2}}})
-
-    s = s.query(Match(Name={"query": q, "fuzziness":8}))
+    # high fuzziness because of typos in search bar
+    s = s.query(MultiMatch(query = q, fields = ["Name", "Style"], fuzziness = 5))
+    if(s.count() > num_autocomplete):
+        s = s[0:num_autocomplete]
+    else:
+        s = s[:]
     es_res = s.execute()
 
     methods = []
     res = {}
     count = 0
     for hit in es_res:
-        if str(q).lower() in str(hit["Name"]).lower():
-            val = hit["Name"]
-        elif str(q).lower() in str(hit["Style"]).lower():
-            val = hit["Style"]
-        else:
-            continue
 
-        if str(val) == str(q):
+        #check which of the two fields match better
+        if SequenceMatcher(None, str(q), str(hit["Style"])).ratio() > \
+           SequenceMatcher(None, str(hit["Name"]), str(q)).ratio():
+           val = hit["Style"]
+        else:
+            val = hit["Name"]
+
+        # don't autocomplete the same word
+        if str(val).lower() == str(q).lower():
             continue
         
-        if count < 7:
+        #max num of autocompletion suggestions
+        if count < num_autocomplete:
             if val not in methods:
                 methods.append(val)
                 count = count + 1
