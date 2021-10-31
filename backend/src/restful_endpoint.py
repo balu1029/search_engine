@@ -30,7 +30,6 @@ def hello_world():
 @cross_origin()
 def search():
     
-    res = []
     req = json.loads(request.data)
 
     s = Search(using = es, index = "beer_recipes")
@@ -66,9 +65,14 @@ def search():
     else:
         s = s[start:]
 
+    # find out how many of each brew methods are in the results
+    aggregation = A("terms", field = "BrewMethod")
+    s.aggs.bucket("dist_brewmethods_per_result", aggregation)
 
     es_res = s.execute()
 
+    res = {}
+    hits = []
     for hit in es_res:  
         try:
             response = {}
@@ -77,12 +81,19 @@ def search():
             response["abv"] = hit.ABV
             response["brewMethod"] = hit.BrewMethod
             response["style"] = hit.Style
-            response["num_hits"] = s.count()
-
-            res.append(response)
+    
+            hits.append(response)
         except:
             continue
-        
+    res["hits"] = hits
+
+    aggregs = {}
+    for elem in es_res["aggregations"]["dist_brewmethods_per_result"]["buckets"]:
+        aggregs[elem["key"].replace(" ", "")] = elem["doc_count"]
+
+    aggregs["num_hits"] = s.count()
+    res["aggs"] = aggregs   
+    
     return json.dumps(res)
 
 
