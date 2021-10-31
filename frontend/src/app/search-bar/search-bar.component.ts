@@ -67,7 +67,8 @@ export class SearchBarComponent implements OnInit {
       this.http.post(this.backendUrl + 'search?offset=' + this.offset, this.formValues).toPromise().then((res: any) => {
         console.log(res);
         if(this.searchResults) {
-          this.searchResults = this.searchResults.concat(res)
+          console.log(this.searchResults)
+          this.searchResults.hits = this.searchResults.hits.concat(res.hits)
         } else {
           this.searchResults = res;
         }

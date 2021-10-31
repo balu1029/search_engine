@@ -67,7 +67,7 @@
             </p>
         </div>
     </div>
-    <div id="homer-div" *ngIf="searchResults && !isLoading && searchResults.length === 0">
+    <div id="homer-div" *ngIf="searchResults && !isLoading && searchResults.hits.length === 0">
         <img src="../../assets/sad-homer.png" alt="There's no beer to be seen" id="homer">
         <p id="homerText">🌴 Kein Bier auf Hawaii 🌴</p>
     </div>
