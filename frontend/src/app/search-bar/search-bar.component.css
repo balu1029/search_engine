@@ -2,13 +2,22 @@
     display: flex;
 }
 
+@media (max-width: 1050px) {
+    #outerDiv {
+        display: block;
+    }
+    #brewMethodStats {
+        display: none;
+    }
+}
+
 #search-form {
     padding: 40px;
     margin: 3%;
     align-content: center;
     border: 3px solid rgba(233, 155, 10, 0.644);
     border-radius: 10px;
-    
+
 }
 
 label, input, select {
@@ -52,8 +61,9 @@ label, input, select {
  }
 
 #submitButton {
+    color: black;
     font-size: large;
-    border: 1px solid black;
+    border: 2px solid rgba(131, 87, 5, 0.644);
     border-radius: 5px; 
     background-color: transparent;
     
@@ -83,14 +93,24 @@ label, input, select {
 }
 
 #searchResults{
-    margin: auto;
+    display: flex;
+    justify-content: start;
+    align-items: flex-start;
+    flex-wrap: wrap;
 }
+
+ @media (max-width: 1400px){
+     .searches {
+        width: 100% !important;
+     }
+ }
 
 .searches {
     margin: 2%;
     padding: 20px;
     border: 2px solid rgb(34, 34, 34);
     border-radius: 15px;
+    width: 40%;
 }
 
 .searches:hover {
@@ -100,16 +120,19 @@ label, input, select {
 #resultName {
     font-size: xx-large;
     font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
  #resultABV {
-     float: right;
+    float: right;
     font-size: xx-large;
  }
 
  #resultURL{
-     border-top: 1px solid black;
-     padding: 10px;
-     margin: 2%;
+    border-top: 1px solid black;
+    padding: 10px;
+    margin: 2%;
  }
 
  #noSearchResults {
@@ -130,8 +153,49 @@ label, input, select {
  }
 
  #homer-div {
-     margin: auto;
-     align-items: center;
-     align-content: center;
-     text-align: center;
+    margin: auto;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+ }
+
+ #homerText {
+    font-size: x-large;
+    text-align: center;
+ }
+
+ #loadMoreButton {
+    font-size: x-large;
+    border-radius: 5px;
+    margin: auto;
+    margin-bottom: 3%;
+    padding: 5px;
+    
+ }
+
+ #loadMoreButton:focus {
+     outline: 2px  cyan;
+ }
+
+ #brewMethodStats {
+    margin: 3%;
+    align-content: center;
+    border-radius: 10px;
+ }
+
+ .brewStatsClass {
+     font-size: larger;
+     padding: 5px;
+     text-align: center
+    }
+
+ .brewStatSpan{
+     font-size: larger;
+     font-weight: 600;
+ }
+ 
+ .barChart{
+     background-color: brown;
+     position: absolute;
+     height: 10px;
  }

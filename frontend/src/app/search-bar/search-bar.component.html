@@ -3,12 +3,13 @@
         <form [formGroup]="beerForm" (ngSubmit)="onSubmit()" id="search-form">
             <label id=searchInputLabel>
                 Suche
-                <input type="text" formControlName="query" placeholder="Finde dein Bier!" id="searchInput" autocomplete="off" list="searchSuggestions">
-                    <datalist id="searchSuggestions">
-                        <option *ngFor="let sugg of autoCompleteSugg" [ngValue]="sugg" >
-                            {{ sugg }}
-                        </option>
-                    </datalist>
+                <input type="text" formControlName="query" placeholder="Finde dein Bier!" id="searchInput"
+                    autocomplete="off" list="searchSuggestions">
+                <datalist id="searchSuggestions">
+                    <option *ngFor="let sugg of autoCompleteSugg" [ngValue]="sugg">
+                        {{ sugg }}
+                    </option>
+                </datalist>
             </label>
             <h3>Mehr Optionen
                 <span>
@@ -43,26 +44,50 @@
                 Suche <fa-icon [icon]="faSearch"></fa-icon>
             </button>
         </form>
+        <div id="brewMethodStats" *ngIf="searchResults">
+            <p class="brewStatsClass">
+                <span class="brewStatSpan">Treffer: </span>{{searchResults.aggs.num_hits}} Ergebnisse
+            </p>
+
+            <p class="brewStatsClass" *ngIf="searchResults.aggs.AllGrain">
+                <span class="brewStatSpan">All Grain: </span>{{searchResults.aggs.AllGrain}} Ergebnisse   
+            </p>
+
+            <p class="brewStatsClass" *ngIf="searchResults.aggs.BIAB">
+                <span class="brewStatSpan">BIAB: </span>{{searchResults.aggs.BIAB}} Ergebnisse
+                
+            </p>
+
+            <p class="brewStatsClass" *ngIf="searchResults.aggs.extract">
+                <span class="brewStatSpan">Extract: </span>{{searchResults.aggs.extract}} Ergebnisse
+            </p>
+
+            <p class="brewStatsClass" *ngIf="searchResults.aggs.PartialMash">
+                <span class="brewStatSpan">Partial Mash: </span>{{searchResults.aggs.PartialMash}} Ergebnisse
+            </p>
+        </div>
     </div>
-    <div id="homer-div" *ngIf="!searchResults">
-        <img src="../../assets/sad-homer.png" alt="There's no beer to be seen"  id="homer">
-        Kein Bier auf Hawaii
+    <div id="homer-div" *ngIf="searchResults && !isLoading && searchResults.length === 0">
+        <img src="../../assets/sad-homer.png" alt="There's no beer to be seen" id="homer">
+        <p id="homerText">🌴 Kein Bier auf Hawaii 🌴</p>
     </div>
 
     <div *ngIf="searchResults" id="searchResults">
-        <div *ngFor="let searchRes of searchResults" class="searches">
+        <div *ngFor="let searchRes of searchResults.hits" class="searches">
 
             <div id="resultName">{{ searchRes.name }}</div>
 
-            <div id="resultABV">{{ searchRes.abv }}‰ </div>
+            <div id="resultABV">{{ searchRes.abv }}%</div>
 
             <div id="resultBrewMethod">Braumethode: {{ searchRes.brewMethod }}</div>
 
             <div id="resultStyle">Sorte: {{ searchRes.style }}</div>
 
             <div id="resultURL">
-                Zum Rezept: <a href="{{searchRes.url}}" target="_blank">{{ searchRes.url }}</a>
+                <br><a href="{{searchRes.url}}" target="_blank">Zum Rezept</a>
             </div>
         </div>
+        <button (click)="loadMore()" *ngIf="searchResults.hits.length < searchResults.aggs.num_hits" id="loadMoreButton">Mehr
+            Ergebnisse</button>
     </div>
 </div>

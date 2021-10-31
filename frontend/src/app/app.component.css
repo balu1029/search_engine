@@ -8,3 +8,8 @@ h1 {
     padding-left: 10px;
     padding-bottom: 2px;
 }
+
+#headerDiv {
+    position: sticky;
+    width: 100%;
+}

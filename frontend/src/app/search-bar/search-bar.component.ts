@@ -23,11 +23,14 @@ export class SearchBarComponent implements OnInit {
 
   searchResults;
   extraOptionsToggle = false;
+  offset = 0;
+
+  isLoading = false;
+  isInitialLoad = true;
   
 
 
-  constructor(private fb: FormBuilder, 
-              private http: HttpClient) { }
+  constructor(private fb: FormBuilder, private http: HttpClient) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -53,14 +56,22 @@ export class SearchBarComponent implements OnInit {
   onSubmit() {
     this.formValues = this.beerForm.value;
     console.log(this.formValues);
+    this.searchResults = null;
     this.sendToBackend();
   }
 
   sendToBackend() {
+    this.isLoading = true;
+    this.isInitialLoad = false;
     return new Promise(resolve => {
-      this.http.post(this.backendUrl + 'search', this.formValues).toPromise().then((res) => {
+      this.http.post(this.backendUrl + 'search?offset=' + this.offset, this.formValues).toPromise().then((res: any) => {
         console.log(res);
-        this.searchResults = res;
+        if(this.searchResults) {
+          this.searchResults = this.searchResults.concat(res)
+        } else {
+          this.searchResults = res;
+        }
+        this.isLoading = false;
       });
     });
   }
@@ -81,8 +92,14 @@ export class SearchBarComponent implements OnInit {
     return new Promise(resolve => {
       this.http.get(this.backendUrl + 'autocomplete?query=' + value).subscribe((res: any) => {
         this.autoCompleteSugg = res.results;
-        console.log(res.results);
+        console.log(this.autoCompleteSugg);
       });
     });
   } 
+
+  loadMore(){
+    console.log(this.searchResults)
+    this.offset = this.searchResults.length;
+    this.sendToBackend();
+  }
 }
